@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow Pro | Productivity Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand-block">
+          <h1>TaskFlow Pro</h1>
+          <p>Smart Productivity Hub</p>
+        </div>
+
+        <button id="openTaskModalBtn" class="primary-btn full-btn">+ New Task</button>
+
+        <nav class="side-nav">
+          <button class="nav-item active">Dashboard</button>
+          <button class="nav-item">Tasks</button>
+          <button class="nav-item">Categories</button>
+          <button class="nav-item">Completed</button>
+        </nav>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="themeToggle" class="theme-btn" aria-label="Toggle dark mode">🌙 Dark Mode</button>
+        <div class="profile-card">
+          <div class="avatar">TF</div>
+          <div>
+            <strong>TaskFlow Pro</strong>
+            <span>Focus better, finish faster</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="search-box">
+          <span>🔎</span>
+          <input id="searchInput" type="text" placeholder="Search tasks, categories..." />
+        </div>
+        <div class="topbar-actions">
+          <button id="mobileThemeToggle" class="icon-btn" aria-label="Toggle theme">🌗</button>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div>
+          <h2>Manage your day like a pro.</h2>
+          <p>Track work and personal tasks, drag to reorder, and keep your progress moving.</p>
+        </div>
+        <div class="hero-date" id="todayDate"></div>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Total Tasks</span>
+          <h3 id="totalTasks">0</h3>
+        </article>
+        <article class="stat-card highlight">
+          <span class="stat-label">Completed</span>
+          <h3 id="completedTasks">0</h3>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Pending</span>
+          <h3 id="pendingTasks">0</h3>
+        </article>
+        <article class="stat-card">
+          <span class="stat-label">Progress</span>
+          <h3><span id="progressPercent">0</span>%</h3>
+          <div class="progress-track">
+            <div id="progressBar" class="progress-fill"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="toolbar">
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="pending">Pending</button>
+          <button class="filter-btn" data-filter="completed">Completed</button>
+        </div>
+
+        <div class="filters second-row">
+          <button class="category-btn active" data-category="all">All Categories</button>
+          <button class="category-btn" data-category="Work">Work</button>
+          <button class="category-btn" data-category="Personal">Personal</button>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <section class="tasks-panel card">
+          <div class="panel-head">
+            <div>
+              <h3>Your Tasks</h3>
+              <p>Drag and drop cards to sort your priorities.</p>
+            </div>
+          </div>
+
+          <div id="taskList" class="task-list"></div>
+          <div id="emptyState" class="empty-state hidden">
+            <h4>No tasks found</h4>
+            <p>Try changing the filters or add a new task.</p>
+          </div>
+        </section>
+
+        <aside class="card insights-panel">
+          <h3>Quick Insights</h3>
+          <div class="insight-row">
+            <span>Work Tasks</span>
+            <strong id="workCount">0</strong>
+          </div>
+          <div class="insight-row">
+            <span>Personal Tasks</span>
+            <strong id="personalCount">0</strong>
+          </div>
+          <div class="insight-row">
+            <span>Done Today</span>
+            <strong id="doneCount">0</strong>
+          </div>
+          <hr />
+          <p class="insight-note">Everything is saved automatically using LocalStorage.</p>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="taskModal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Add New Task</h3>
+        <button id="closeModalBtn" class="icon-btn">✕</button>
+      </div>
+
+      <form id="taskForm" class="task-form">
+        <input type="hidden" id="taskId" />
+
+        <label>
+          Task Title
+          <input id="taskTitle" type="text" placeholder="e.g. Finish landing page" required />
+        </label>
+
+        <label>
+          Description
+          <textarea id="taskDescription" rows="4" placeholder="Add useful details..."></textarea>
+        </label>
+
+        <div class="form-grid">
+          <label>
+            Category
+            <select id="taskCategory">
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+            </select>
+          </label>
+
+          <label>
+            Due Date
+            <input id="taskDate" type="date" />
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="secondary-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <template id="taskTemplate">
+    <article class="task-item" draggable="true">
+      <div class="task-main">
+        <label class="checkbox-wrap">
+          <input class="task-check" type="checkbox" />
+          <span></span>
+        </label>
+
+        <div class="task-copy">
+          <div class="task-topline">
+            <h4 class="task-title"></h4>
+            <span class="task-category badge"></span>
+          </div>
+          <p class="task-desc"></p>
+          <div class="task-meta">
+            <span class="task-date"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="task-actions">
+        <button class="edit-btn secondary-btn small-btn">Edit</button>
+        <button class="delete-btn danger-btn small-btn">Delete</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
